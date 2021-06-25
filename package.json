@@ -1,0 +1,21 @@
+{
+  "name": "daily-bot",
+  "version": "1.0.0",
+  "description": "bot for handling dailies",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^10.0.0",
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.5.0"
+  }
+}
