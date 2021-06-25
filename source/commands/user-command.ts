@@ -8,5 +8,9 @@ export class UserCommand implements BaseCommand
   async run(commandContext : CommandContext)
   {
     console.log(`User command - Original message: ${commandContext.originalMessage} | Arguments : ${commandContext.args}`)
+    // TODO: implement subcommand "add"
+    // TODO: implement subcommand "remove"
+    // TODO: implement subcommand "list"
+
   }
 }
