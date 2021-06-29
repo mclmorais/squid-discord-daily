@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { injectable } from "tsyringe";
+import { container } from "tsyringe";
 import { BaseCommand } from "./base-command";
 import { CommandContext } from "./command-context";
 import { DailyCommand } from "./daily-command";
@@ -7,12 +7,13 @@ import { UserCommand } from "./user-command";
 
 export class CommandInterpreter
 {
-  private commands : BaseCommand[];
+  private commands: BaseCommand[] = []
 
   constructor()
   {
-    const commandClasses = [UserCommand, DailyCommand]
-    this.commands = commandClasses.map(CommandClass => new CommandClass())
+    this.commands.push(container.resolve(DailyCommand))
+    // const commandClasses = [UserCommand, DailyCommand]
+    // this.commands = commandClasses.map(CommandClass => container.resolve(CommandClass)
   }
 
   interpret(message : Message)

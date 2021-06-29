@@ -1,6 +1,8 @@
+import { injectable } from "tsyringe";
 import { BaseCommand } from "./base-command";
 import { CommandContext } from "./command-context";
 
+@injectable()
 export class UserCommand implements BaseCommand
 {
   readonly commandName = 'user'

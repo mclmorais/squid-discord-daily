@@ -1,0 +1,34 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             Int         @id @default(autoincrement())
+  userDiscordId  String
+  guildDiscordId String
+  dailyUser      DailyUser[]
+
+}
+
+model Daily {
+  id                    Int         @id @default(autoincrement())
+  title                 String
+  scheduleTime          DateTime
+  guildDiscordId        String
+  textChannelDiscordId  String
+  voiceChannelDiscordId String
+  dailyUser             DailyUser[]
+}
+
+model DailyUser {
+  id      Int   @id @default(autoincrement())
+  dailyId Int
+  userId  Int
+  daily   Daily @relation(fields: [dailyId], references: [id])
+  user    User  @relation(fields: [userId], references: [id])
+}
