@@ -16,11 +16,8 @@ export class DailyCommand implements BaseCommand
 
     switch (subcommand)
     {
-      case 'create':
-        return this.#Create(commandContext)
-      case 'update':
-        commandContext.originalMessage.channel.send('Ainda não implementado')
-        break
+      case 'configure':
+        return this.#Configure(commandContext)
       case 'disable':
         commandContext.originalMessage.channel.send('Ainda não implementado')
         break
@@ -44,26 +41,45 @@ export class DailyCommand implements BaseCommand
     }
   }
 
-  async #Create (commandContext: CommandContext)
+  async #Configure (commandContext: CommandContext)
   {
     // TODO: validate fields
     const textChannel = commandContext.originalMessage.channel as TextChannel
     const guild = commandContext.originalMessage.guild
 
-    const [title, voiceChannelDiscordId] = commandContext.args.slice(1)
+    const [title, textChannelDiscordMention, voiceChannelDiscordId] = commandContext.args.slice(1)
 
-    const voiceChannel = guild?.channels.cache.get(voiceChannelDiscordId) as VoiceChannel
+    const targetVoiceChannel = guild?.channels.cache.get(voiceChannelDiscordId) as VoiceChannel
+    if (!targetVoiceChannel)
+    {
+      textChannel.send('Canal de voz não encontrado; daily não configurada')
+      return
+    }
 
-    await this.prisma.daily.create({
-      data : {
+    const targetTextChannel = guild?.channels.cache.get(textChannelDiscordMention.replace(/\D/g, '')) as TextChannel
+    if (!targetTextChannel)
+    {
+      textChannel.send('Canal de texto não encontrado; daily não configurada')
+      return
+    }
+
+    await this.prisma.daily.upsert({
+      where  : { title },
+      update : {
         title,
         guildDiscordId        : guild?.id,
-        scheduleTime          : null,
-        textChannelDiscordId  : textChannel.id,
-        voiceChannelDiscordId : voiceChannel.id
+        textChannelDiscordId  : targetTextChannel.id,
+        voiceChannelDiscordId : targetVoiceChannel.id
+      },
+      create : {
+        title,
+        guildDiscordId        : guild?.id,
+        textChannelDiscordId  : targetTextChannel.id,
+        voiceChannelDiscordId : targetVoiceChannel.id
       }
+
     })
 
-    textChannel.send(`Daily "${title}" criada no servidor "${guild?.name}", no canal de texto "${textChannel.name}", ligado ao canal de voz "${voiceChannel.name}"`)
+    textChannel.send(`Daily "${title}" configurada no servidor "${guild?.name}", no canal de texto "${textChannel.name}", ligado ao canal de voz "${targetVoiceChannel.name}"`)
   }
 }

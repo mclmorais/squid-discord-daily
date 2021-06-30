@@ -7,16 +7,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id             Int         @id @default(autoincrement())
-  userDiscordId  String
-  guildDiscordId String
-  dailyUser      DailyUser[]
-}
-
 model Daily {
   id                    Int         @id @default(autoincrement())
-  title                 String
+  title                 String @unique
   scheduleTime          DateTime?
   guildDiscordId        String?
   textChannelDiscordId  String
@@ -28,6 +21,7 @@ model DailyUser {
   id      Int   @id @default(autoincrement())
   dailyId Int
   userId  Int
+  userDiscordId  String
+  guildDiscordId String
   daily   Daily @relation(fields: [dailyId], references: [id])
-  user    User  @relation(fields: [userId], references: [id])
 }
