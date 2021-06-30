@@ -1,47 +1,51 @@
-import { PrismaClient } from "@prisma/client";
-import { TextChannel, VoiceChannel } from "discord.js";
-import { inject, injectable } from "tsyringe";
-import { BaseCommand } from "./base-command";
-import { CommandContext } from "./command-context";
-
+import { PrismaClient } from '@prisma/client'
+import { TextChannel, VoiceChannel } from 'discord.js'
+import { inject, injectable } from 'tsyringe'
+import { BaseCommand } from './base-command'
+import { CommandContext } from './command-context'
 
 @injectable()
-export class DailyCommand implements BaseCommand {
-
-  constructor(@inject(PrismaClient) private prisma: PrismaClient) { }
+export class DailyCommand implements BaseCommand
+{
+  constructor (@inject(PrismaClient) private prisma: PrismaClient) { }
   public commandName = 'daily'
 
-  async run(commandContext: CommandContext): Promise<void> {
-
+  async run (commandContext: CommandContext): Promise<void>
+  {
     const [subcommand] = commandContext.args
 
-    switch (subcommand) {
+    switch (subcommand)
+    {
       case 'create':
         return this.#Create(commandContext)
       case 'update':
-        commandContext.originalMessage.channel.send(`Ainda não implementado`)
+        commandContext.originalMessage.channel.send('Ainda não implementado')
+        break
       case 'disable':
-        commandContext.originalMessage.channel.send(`Ainda não implementado`)
+        commandContext.originalMessage.channel.send('Ainda não implementado')
+        break
       case 'enable':
-        commandContext.originalMessage.channel.send(`Ainda não implementado`)
+        commandContext.originalMessage.channel.send('Ainda não implementado')
+        break
       case 'schedule':
-        commandContext.originalMessage.channel.send(`Ainda não implementado`)
+        commandContext.originalMessage.channel.send('Ainda não implementado')
+        break
       case 'add':
-        commandContext.originalMessage.channel.send(`Ainda não implementado`)
+        commandContext.originalMessage.channel.send('Ainda não implementado')
+        break
       case 'remove':
-        commandContext.originalMessage.channel.send(`Ainda não implementado`)
+        commandContext.originalMessage.channel.send('Ainda não implementado')
+        break
       case 'help':
-        commandContext.originalMessage.channel.send(`Ainda não implementado`)
-        return
+        commandContext.originalMessage.channel.send('Ainda não implementado')
+        break
       default:
-        commandContext.originalMessage.channel.send(`Comando não encontrado. Digite \`!daily help\` para listagem de comandos`)
-        return
+        commandContext.originalMessage.channel.send('Comando não encontrado. Digite `!daily help` para listagem de comandos')
     }
-
   }
 
-  async #Create(commandContext: CommandContext) {
-
+  async #Create (commandContext: CommandContext)
+  {
     // TODO: validate fields
     const textChannel = commandContext.originalMessage.channel as TextChannel
     const guild = commandContext.originalMessage.guild
@@ -51,12 +55,12 @@ export class DailyCommand implements BaseCommand {
     const voiceChannel = guild?.channels.cache.get(voiceChannelDiscordId) as VoiceChannel
 
     await this.prisma.daily.create({
-      data: {
+      data : {
         title,
-        guildDiscordId: guild?.id,
-        scheduleTime: null,
-        textChannelDiscordId: textChannel.id,
-        voiceChannelDiscordId: voiceChannel.id
+        guildDiscordId        : guild?.id,
+        scheduleTime          : null,
+        textChannelDiscordId  : textChannel.id,
+        voiceChannelDiscordId : voiceChannel.id
       }
     })
 

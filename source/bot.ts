@@ -1,13 +1,13 @@
-import { Client } from "discord.js";
-import { injectable } from "tsyringe";
-import { CommandInterpreter } from "./commands/command-interpreter";
+import { Client } from 'discord.js'
+import { injectable } from 'tsyringe'
+import { CommandInterpreter } from './commands/command-interpreter'
 
 @injectable()
 export class Bot
 {
-  constructor(private client : Client, private commandInterpreter : CommandInterpreter){};
+  constructor (private client: Client, private commandInterpreter: CommandInterpreter) { };
 
-  init()
+  init ()
   {
     console.log('↗️  Discord bot')
     this.client.once('ready', () => console.log('☑️  Discord Bot'))
