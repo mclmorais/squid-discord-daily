@@ -16,7 +16,7 @@ export class CommandInterpreter
     // this.commands = commandClasses.map(CommandClass => container.resolve(CommandClass)
   }
 
-  interpret(message : Message)
+  async interpret(message: Message)
   {
     try {
       const commandContext = new CommandContext(message, '!')
@@ -24,7 +24,7 @@ export class CommandInterpreter
       const matchedCommand = this.commands.find(command => command.commandName === commandContext.parsedCommandName)
   
       if (matchedCommand)
-        matchedCommand.run(commandContext)
+        await matchedCommand.run(commandContext)
     } catch (error) {
       console.dir(error);
     }

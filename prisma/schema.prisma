@@ -12,14 +12,13 @@ model User {
   userDiscordId  String
   guildDiscordId String
   dailyUser      DailyUser[]
-
 }
 
 model Daily {
   id                    Int         @id @default(autoincrement())
   title                 String
-  scheduleTime          DateTime
-  guildDiscordId        String
+  scheduleTime          DateTime?
+  guildDiscordId        String?
   textChannelDiscordId  String
   voiceChannelDiscordId String
   dailyUser             DailyUser[]

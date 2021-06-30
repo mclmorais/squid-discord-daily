@@ -15,6 +15,7 @@
       "node",
       "reflect-metadata"
     ],
+    "noImplicitReturns": true,
     "rootDir": "source",
     "strict": true,
     "esModuleInterop": true,
