@@ -20,8 +20,7 @@ model Daily {
 model DailyUser {
   id      Int   @id @default(autoincrement())
   dailyId Int
-  userId  Int
   userDiscordId  String
-  guildDiscordId String
+  guildDiscordId String?
   daily   Daily @relation(fields: [dailyId], references: [id])
 }
