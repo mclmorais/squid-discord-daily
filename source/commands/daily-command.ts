@@ -1,16 +1,26 @@
 import { Daily, PrismaClient } from '@prisma/client'
 import { Guild, TextChannel, VoiceChannel } from 'discord.js'
 import { inject, injectable } from 'tsyringe'
+import { Scheduler } from '../scheduler/scheduler'
 import { BaseCommand } from './base-command'
 import { CommandContext } from './command-context'
 
-type dailySubcommand = 'create' | 'add-user' | 'schedule'
+type dailySubcommand = 'create' | 'add-user' | 'schedule' | 'start'
 
 @injectable()
 export class DailyCommand implements BaseCommand
 {
-  constructor (@inject(PrismaClient) private prisma: PrismaClient) { }
   public commandName = 'daily'
+
+  private subcommandMap = new Map()
+
+  constructor (@inject(PrismaClient) private prisma: PrismaClient, private scheduler : Scheduler)
+  {
+    this.subcommandMap.set('create', this.#Create)
+    this.subcommandMap.set('add-user', this.#Adduser)
+    this.subcommandMap.set('start', this.#Start)
+    this.subcommandMap.set('schedule', this.#Schedule)
+  }
 
   async run (commandContext: CommandContext): Promise<void>
   {
@@ -23,29 +33,15 @@ export class DailyCommand implements BaseCommand
     const textChannel = commandContext.originalMessage.channel as TextChannel
     const guild = commandContext.originalMessage.guild
 
-    switch (subcommand)
+    const subcommandMethod = this.subcommandMap.get(subcommand)
+
+    if (!subcommandMethod)
     {
-      case 'create' :
-        return this.#Create(existingDaily, guild, textChannel, dailyTitle, extraArgs)
-      case 'add-user':
-        return this.#Adduser(existingDaily, guild, textChannel, dailyTitle, extraArgs)
-        // case 'disable':
-        //   commandContext.originalMessage.channel.send('Ainda não implementado')
-        //   break
-        // case 'enable':
-        //   commandContext.originalMessage.channel.send('Ainda não implementado')
-        //   break
-        // case 'schedule':
-        //   commandContext.originalMessage.channel.send('Ainda não implementado')
-        //   break
-        // case 'remove':
-        //   commandContext.originalMessage.channel.send('Ainda não implementado')
-        //   break
-        // case 'help':
-        //   commandContext.originalMessage.channel.send('Ainda não implementado')
-      default:
-        commandContext.originalMessage.channel.send('Comando não encontrado. Digite `!daily help` para listagem de comandos')
+      commandContext.originalMessage.channel.send('Comando não encontrado. Digite `!daily help` para listagem de comandos')
+      return
     }
+
+    return subcommandMethod.call(this, existingDaily, guild, textChannel, dailyTitle, extraArgs)
   }
 
   async #Create (existingDaily : Daily | null, guild : Guild | null, textChannel : TextChannel, dailyTitle : string, extraArgs : Array<string>)
@@ -74,6 +70,7 @@ export class DailyCommand implements BaseCommand
 
     await this.prisma.daily.create({
       data : {
+        isActive              : true,
         title                 : dailyTitle,
         guildDiscordId        : guild?.id,
         textChannelDiscordId  : targetTextChannel.id,
@@ -113,5 +110,37 @@ export class DailyCommand implements BaseCommand
         guildDiscordId : guild?.id
       }
     })
+  }
+
+  async #Start (existingDaily : Daily | null, guild : Guild | null, textChannel : TextChannel, dailyTitle : string, extraArgs : Array<string>)
+  {
+    if (!existingDaily)
+    {
+      textChannel.send(`Daily ${dailyTitle} não encontrada`)
+      return
+    }
+
+    textChannel.send('Ainda não implementado')
+  }
+
+  async #Schedule (existingDaily : Daily | null, guild : Guild | null, textChannel : TextChannel, dailyTitle : string, extraArgs : Array<string>)
+  {
+    if (!existingDaily)
+    {
+      textChannel.send(`Daily ${dailyTitle} não encontrada`)
+      return
+    }
+
+    const [minute, hour, day, month, weekday] = extraArgs
+    const crontab = `${minute} ${hour} ${day} ${month} ${weekday}`
+
+    await this.prisma.daily.update({
+      where : { id : existingDaily.id },
+      data  : { scheduleCron : crontab }
+    })
+
+    this.scheduler.reschedule(existingDaily, crontab)
+
+    textChannel.send(`Daily ${dailyTitle} agendada com cron \`${crontab}\``)
   }
 }

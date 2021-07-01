@@ -9,8 +9,9 @@ generator client {
 
 model Daily {
   id                    Int         @id @default(autoincrement())
-  title                 String @unique
-  scheduleTime          DateTime?
+  title                 String      @unique
+  isActive              Boolean
+  scheduleCron          String?
   guildDiscordId        String?
   textChannelDiscordId  String
   voiceChannelDiscordId String
@@ -18,9 +19,9 @@ model Daily {
 }
 
 model DailyUser {
-  id      Int   @id @default(autoincrement())
-  dailyId Int
+  id             Int     @id @default(autoincrement())
+  dailyId        Int
   userDiscordId  String
   guildDiscordId String?
-  daily   Daily @relation(fields: [dailyId], references: [id])
+  daily          Daily   @relation(fields: [dailyId], references: [id])
 }
