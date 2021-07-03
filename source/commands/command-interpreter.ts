@@ -1,26 +1,34 @@
-import { Message } from "discord.js";
-import { injectable } from "tsyringe";
-import { BaseCommand } from "./base-command";
-import { CommandContext } from "./command-context";
-import { UserCommand } from "./user-command";
+import { Message } from 'discord.js'
+import { container } from 'tsyringe'
+import { BaseCommand } from './base-command'
+import { CommandContext } from './command-context'
+import { DailyCommand } from './daily-command'
 
 export class CommandInterpreter
 {
-  private commands : BaseCommand[];
+  private commands: BaseCommand[] = []
 
-  constructor()
+  constructor ()
   {
-    const commandClasses = [UserCommand]
-    this.commands = commandClasses.map(CommandClass => new CommandClass())
+    this.commands.push(container.resolve(DailyCommand))
+    // const commandClasses = [UserCommand, DailyCommand]
+    // this.commands = commandClasses.map(CommandClass => container.resolve(CommandClass)
   }
 
-  interpret(message : Message)
+  async interpret (message: Message)
   {
-    const commandContext = new CommandContext(message, '!')
+    try
+    {
+      const commandContext = new CommandContext(message, '!')
 
-    const matchedCommand = this.commands.find(command => command.commandName === commandContext.parsedCommandName)
+      const matchedCommand = this.commands.find(command => command.commandName === commandContext.parsedCommandName)
 
-    if (matchedCommand)
-      matchedCommand.run(commandContext)
+      if (matchedCommand)
+        await matchedCommand.run(commandContext)
+    }
+    catch (error)
+    {
+      console.dir(error)
+    }
   }
 }

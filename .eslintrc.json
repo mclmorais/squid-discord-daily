@@ -1,0 +1,59 @@
+{
+    "env": {
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "no-return-await": "error",
+        "semi": [
+          "error",
+          "never"
+        ],
+        "key-spacing": [
+          "error",
+          {
+            "singleLine": {
+              "mode": "minimum",
+              "beforeColon": true,
+              "afterColon": true
+            },
+            "multiLine": {
+              "beforeColon": true,
+              "afterColon": true,
+              "align": "colon"
+            }
+          }
+        ],
+        "curly": [
+          "error",
+          "multi-or-nest"
+        ],
+        "brace-style": [
+          "error",
+          "allman",
+          {
+            "allowSingleLine": true
+          }
+        ],
+        "object-curly-spacing": [
+          2,
+          "always",
+          {
+            "arraysInObjects": true,
+            "objectsInObjects": true
+          }
+        ],
+        "no-useless-constructor": "off"
+    }
+}
