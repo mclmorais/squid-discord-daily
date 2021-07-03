@@ -1,12 +1,14 @@
 import { Daily, PrismaClient } from '@prisma/client'
 import { Guild, TextChannel, VoiceChannel } from 'discord.js'
 import { inject, injectable } from 'tsyringe'
+import { DailyInstance } from '../instance/daily-instance'
 import { Scheduler } from '../scheduler/scheduler'
 import { BaseCommand } from './base-command'
 import { CommandContext } from './command-context'
 
 type dailySubcommand = 'create' | 'add-user' | 'schedule' | 'start'
 
+// TODO: change all subcommands into main commands
 @injectable()
 export class DailyCommand implements BaseCommand
 {
@@ -119,8 +121,17 @@ export class DailyCommand implements BaseCommand
       textChannel.send(`Daily ${dailyTitle} não encontrada`)
       return
     }
-
-    textChannel.send('Ainda não implementado')
+    textChannel.send('Starting')
+    const dailyInstance = new DailyInstance(existingDaily)
+    dailyInstance.UpdateState('proceed')
+    dailyInstance.UpdateState('proceed')
+    dailyInstance.UpdateState('proceed')
+    dailyInstance.UpdateState('proceed')
+    dailyInstance.UpdateState('proceed')
+    dailyInstance.UpdateState('proceed')
+    dailyInstance.UpdateState('proceed')
+    dailyInstance.UpdateState('proceed')
+    textChannel.send('Ending')
   }
 
   async #Schedule (existingDaily : Daily | null, guild : Guild | null, textChannel : TextChannel, dailyTitle : string, extraArgs : Array<string>)

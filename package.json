@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@prisma/client": "^2.26.0",
+    "@xstate/fsm": "^1.6.1",
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",
     "node-schedule": "^2.0.0",

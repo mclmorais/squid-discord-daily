@@ -1,12 +1,12 @@
 import { Client } from 'discord.js'
-import { injectable } from 'tsyringe'
+import { singleton } from 'tsyringe'
 import { CommandInterpreter } from './commands/command-interpreter'
 import { Scheduler } from './scheduler/scheduler'
 
-@injectable()
+@singleton()
 export class Bot
 {
-  constructor (private client: Client, private commandInterpreter: CommandInterpreter, private scheduler : Scheduler) { };
+  constructor (public client: Client, private commandInterpreter: CommandInterpreter, private scheduler : Scheduler) { };
 
   init ()
   {
