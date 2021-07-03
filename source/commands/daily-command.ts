@@ -28,6 +28,11 @@ export class DailyCommand implements BaseCommand
   {
     const [rawSubcommand, dailyTitle, ...extraArgs] = commandContext.args
 
+    if (!dailyTitle)
+    {
+      commandContext.originalMessage.channel.send('Daily não encontrada. Digite `!daily list` para listagem de dailies')
+      return
+    }
     const subcommand = rawSubcommand as dailySubcommand
 
     const existingDaily = await this.prisma.daily.findFirst({ where : { title : dailyTitle } })
@@ -121,17 +126,8 @@ export class DailyCommand implements BaseCommand
       textChannel.send(`Daily ${dailyTitle} não encontrada`)
       return
     }
-    textChannel.send('Starting')
     const dailyInstance = new DailyInstance(existingDaily)
-    dailyInstance.UpdateState('proceed')
-    dailyInstance.UpdateState('proceed')
-    dailyInstance.UpdateState('proceed')
-    dailyInstance.UpdateState('proceed')
-    dailyInstance.UpdateState('proceed')
-    dailyInstance.UpdateState('proceed')
-    dailyInstance.UpdateState('proceed')
-    dailyInstance.UpdateState('proceed')
-    textChannel.send('Ending')
+    await dailyInstance.Start()
   }
 
   async #Schedule (existingDaily : Daily | null, guild : Guild | null, textChannel : TextChannel, dailyTitle : string, extraArgs : Array<string>)

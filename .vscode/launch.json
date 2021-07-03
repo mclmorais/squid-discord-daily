@@ -11,6 +11,10 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
+      "presentation": {
+        "reveal": "silent",
+        "close": true
+    },
       "program": "${workspaceFolder}/source/index.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
