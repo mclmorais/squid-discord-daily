@@ -22,7 +22,7 @@ export class ScheduleCommand implements BaseCommand
     const [minute, hour, day, month, weekday] = subcommandArguments
     const crontab = `${minute} ${hour} ${day} ${month} ${weekday}`
 
-    await this.prisma.daily.update({
+    existingDaily = await this.prisma.daily.update({
       where : { id : existingDaily.id },
       data  : { scheduleCron : crontab }
     })

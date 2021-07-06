@@ -8,10 +8,10 @@ export class Bot
 {
   constructor (public client: Client, private commandInterpreter: CommandInterpreter, private scheduler : Scheduler) { };
 
-  init ()
+  async init ()
   {
     console.log('↗️  Scheduler')
-    this.scheduler.schedule()
+    await this.scheduler.schedule()
     console.log('☑️  Scheduler')
     console.log('')
     console.log('↗️  Discord bot')
