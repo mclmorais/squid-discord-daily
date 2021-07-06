@@ -8,9 +8,7 @@ import { BaseCommand } from './base-command'
 export class StartCommand implements BaseCommand
 {
   commandName: string = 'start'
-  constructor (@inject(PrismaClient) private prisma: PrismaClient)
-  {
-  }
+  constructor (@inject(PrismaClient) private prisma: PrismaClient) { }
 
   async run (existingDaily: Daily | null, messageGuild: Guild, messageTextChannel: TextChannel, subcommandArguments: string[])
   {

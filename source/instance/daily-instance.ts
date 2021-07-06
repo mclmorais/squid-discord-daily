@@ -5,6 +5,7 @@ import { container } from 'tsyringe'
 import { Bot } from '../bot'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
+import { v4 as uuidv4 } from 'uuid'
 dayjs.extend(duration)
 
 export class DailyInstance
@@ -32,9 +33,11 @@ export class DailyInstance
   private missingUsers : Array<DailyUser> = []
   private missingUserTimer : ReturnType<typeof setTimeout> | undefined
   private message : Message | undefined
-  timeoutDuration: duration.Duration = dayjs.duration(5, 'minutes')
-  timeoutDate: dayjs.Dayjs | undefined
-  waitTimeoutTimer: ReturnType<typeof setTimeout> | undefined
+  timeoutDuration : duration.Duration = dayjs.duration(5, 'minutes')
+  timeoutDate : dayjs.Dayjs | undefined
+  waitTimeoutTimer : ReturnType<typeof setTimeout> | undefined
+  debugTimer : ReturnType<typeof setTimeout> | undefined
+  private uniqueId = uuidv4()
 
   constructor (private daily : Daily)
   {
@@ -47,6 +50,7 @@ export class DailyInstance
     this.actionMap.set('wait', this.#Wait)
     this.actionMap.set('execution', this.#Execute)
     this.actionMap.set('end', this.#End)
+    this.debugTimer = setInterval(() => console.log(`🏃 ${dayjs().format('HH:mm:ss')} ${daily.title} - ${this.uniqueId} - ${this.currentState} `), 3000)
   }
 
   async Start ()
@@ -64,7 +68,7 @@ export class DailyInstance
 
     this.timeoutDate = dayjs().add(this.timeoutDuration)
 
-    this.missingUserTimer = setInterval(() => this.#UpdateMissingUsers(this.message as Message), 3000)
+    this.missingUserTimer = setInterval(async () => this.#UpdateMissingUsers(this.message as Message), 20000)
     this.waitTimeoutTimer = setTimeout(async () => this.UpdateState('proceed'), this.timeoutDuration.asMilliseconds())
   }
 
@@ -95,12 +99,17 @@ export class DailyInstance
     if (this.waitTimeoutTimer)
       clearInterval(this.waitTimeoutTimer)
 
+    if (this.debugTimer)
+      clearInterval(this.debugTimer)
+
     await this.message?.edit(`Daily encerrada. Duração: ${dayjs.duration(dayjs().diff(this.startTime)).format('mm:ss')}`)
   }
 
   async UpdateState (event : string)
   {
+    const previousState = this.currentState
     this.currentState = this.dailyMachine.transition(this.currentState, event).value
+    console.log(`🧨 ${dayjs().format('HH:mm:ss')} ${this.daily.title} - ${this.uniqueId} - ${previousState} --> ${this.currentState}`)
     return this.actionMap.get(this.currentState)?.call(this)
   }
 
@@ -117,12 +126,13 @@ export class DailyInstance
     return dailyUsers.map(dailyUser => `<@${dailyUser.userDiscordId}>`).join(separator)
   }
 
-  #UpdateMissingUsers (message : Message)
+  async #UpdateMissingUsers (message : Message)
   {
     this.missingUsers = this.dailyUsers.filter(dailyUser => !this.voiceChannel.members.get(dailyUser.userDiscordId))
     if (this.missingUsers.length)
     {
-      message.edit(
+      console.log(`Missing users edited for message ${message.id}`)
+      await message.edit(
 `Aguardando os seguintes usuários entrarem no canal <#${this.voiceChannel.id}>:\n${this.#ListMentions(this.missingUsers)}
 Caso algum usuário não esteja presente, a daily começará às ${this.timeoutDate?.format('HH:mm:ss')}`
       )
