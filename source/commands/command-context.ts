@@ -4,7 +4,7 @@ export class CommandContext
 {
   readonly parsedCommandName: string;
 
-  readonly args: string[];
+  readonly commandArguments: string[];
 
   readonly originalMessage: Message;
 
@@ -19,7 +19,7 @@ export class CommandContext
       .split(/ +/g)
 
     this.parsedCommandName = splitMessage.shift()!.toLowerCase()
-    this.args = splitMessage
+    this.commandArguments = splitMessage
     this.originalMessage = message
   }
 }

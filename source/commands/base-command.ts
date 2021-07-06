@@ -1,8 +1,9 @@
-import { CommandContext } from './command-context'
+import { Daily } from '@prisma/client'
+import { Guild, TextChannel } from 'discord.js'
 
 export interface BaseCommand
 {
   readonly commandName : string
 
-  run(commandContext : CommandContext): Promise<void>
+  run(existingDaily : Daily | null, messageGuild: Guild, messageTextChannel : TextChannel, subcommandArguments: Array<string>): Promise<void>
 }

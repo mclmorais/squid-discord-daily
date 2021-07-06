@@ -18,6 +18,7 @@ export class Scheduler
 
     for (const daily of scheduledDailies)
     {
+      console.log(`Scheduled daily ${daily.title} with crontab ${daily.scheduleCron}`)
       this.jobs.set(daily.id, nodeSchedule.scheduleJob(daily.scheduleCron as string, async () =>
       {
         const dailyInstance = new DailyInstance(daily)
