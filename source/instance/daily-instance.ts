@@ -59,12 +59,10 @@ export class DailyInstance
   // TODO: stop timers when leaving this method!
   async #Wait ()
   {
-    await this.textChannel.send('Começando a daily!')
+    this.message = await this.textChannel.send('Começando a daily!')
+    await this.#AddFinishReaction(this.message)
 
     this.timeoutDate = dayjs().add(this.timeoutDuration)
-    this.message = await this.textChannel.send(`Aguardando os seguintes usuários entrarem no canal de voz: ${this.#ListMentions(this.missingUsers)}
-Caso algum usuário não esteja presente, a daily começará às ${this.timeoutDate.format('HH:mm:ss')}`)
-    await this.#AddFinishReaction(this.message)
 
     this.missingUserTimer = setInterval(() => this.#UpdateMissingUsers(this.message as Message), 3000)
     this.waitTimeoutTimer = setTimeout(async () => this.UpdateState('proceed'), this.timeoutDuration.asMilliseconds())
@@ -91,7 +89,13 @@ Caso algum usuário não esteja presente, a daily começará às ${this.timeoutD
 
   async #End ()
   {
-    this.message?.edit(`Daily encerrada. Duração: ${dayjs.duration(dayjs().diff(this.startTime)).format('mm:ss')}`)
+    if (this.missingUserTimer)
+      clearInterval(this.missingUserTimer)
+
+    if (this.waitTimeoutTimer)
+      clearInterval(this.waitTimeoutTimer)
+
+    await this.message?.edit(`Daily encerrada. Duração: ${dayjs.duration(dayjs().diff(this.startTime)).format('mm:ss')}`)
   }
 
   async UpdateState (event : string)
@@ -115,13 +119,13 @@ Caso algum usuário não esteja presente, a daily começará às ${this.timeoutD
 
   #UpdateMissingUsers (message : Message)
   {
-    // const currentMissingUsers = this.missingUsers
     this.missingUsers = this.dailyUsers.filter(dailyUser => !this.voiceChannel.members.get(dailyUser.userDiscordId))
     if (this.missingUsers.length)
     {
-      // if (this.missingUsers.some(missingUser => !(currentMissingUsers.some(c => c.id === missingUser.id))))
-      message.edit(`Aguardando os seguintes usuários entrarem no canal de voz: ${this.#ListMentions(this.missingUsers)}
-Caso algum usuário não esteja presente, a daily começará às ${this.timeoutDate?.format('HH:mm:ss')}`)
+      message.edit(
+`Aguardando os seguintes usuários entrarem no canal de voz <#${this.voiceChannel.id}>:\n${this.#ListMentions(this.missingUsers)}
+Caso algum usuário não esteja presente, a daily começará às ${this.timeoutDate?.format('HH:mm:ss')}`
+      )
     }
     else
       this.UpdateState('proceed')
