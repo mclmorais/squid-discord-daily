@@ -5,6 +5,7 @@ import { AddUserCommand } from './add-user-command'
 import { BaseCommand } from './base-command'
 import { CommandContext } from './command-context'
 import { CreateCommand } from './create-command'
+import { ListCommand } from './list-command'
 import { ScheduleCommand } from './schedule-command'
 import { StartCommand } from './start-command'
 
@@ -19,6 +20,7 @@ export class CommandInterpreter
     this.commands.push(container.resolve(AddUserCommand))
     this.commands.push(container.resolve(StartCommand))
     this.commands.push(container.resolve(ScheduleCommand))
+    this.commands.push(container.resolve(ListCommand))
   }
 
   async interpret (message: Message)

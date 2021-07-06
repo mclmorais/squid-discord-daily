@@ -59,7 +59,7 @@ export class DailyInstance
   // TODO: stop timers when leaving this method!
   async #Wait ()
   {
-    this.message = await this.textChannel.send('Começando a daily!')
+    this.message = await this.textChannel.send(`Começando a daily ${this.daily.title}!`)
     await this.#AddFinishReaction(this.message)
 
     this.timeoutDate = dayjs().add(this.timeoutDuration)
@@ -123,7 +123,7 @@ export class DailyInstance
     if (this.missingUsers.length)
     {
       message.edit(
-`Aguardando os seguintes usuários entrarem no canal de voz <#${this.voiceChannel.id}>:\n${this.#ListMentions(this.missingUsers)}
+`Aguardando os seguintes usuários entrarem no canal <#${this.voiceChannel.id}>:\n${this.#ListMentions(this.missingUsers)}
 Caso algum usuário não esteja presente, a daily começará às ${this.timeoutDate?.format('HH:mm:ss')}`
       )
     }
