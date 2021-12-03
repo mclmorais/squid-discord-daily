@@ -33,7 +33,7 @@ export class DailyInstance
   private missingUsers : Array<DailyUser> = []
   private missingUserTimer : ReturnType<typeof setTimeout> | undefined
   private message : Message | undefined
-  timeoutDuration : duration.Duration = dayjs.duration(5, 'minutes')
+  timeoutDuration : duration.Duration = dayjs.duration(179, 'seconds')
   timeoutDate : dayjs.Dayjs | undefined
   waitTimeoutTimer : ReturnType<typeof setTimeout> | undefined
   debugTimer : ReturnType<typeof setTimeout> | undefined
@@ -68,7 +68,7 @@ export class DailyInstance
 
     this.timeoutDate = dayjs().add(this.timeoutDuration)
 
-    this.missingUserTimer = setInterval(async () => this.#UpdateMissingUsers(this.message as Message), 20000)
+    this.missingUserTimer = setInterval(async () => this.#UpdateMissingUsers(this.message as Message), 3000)
     this.waitTimeoutTimer = setTimeout(async () => this.UpdateState('proceed'), this.timeoutDuration.asMilliseconds())
   }
 
@@ -146,7 +146,11 @@ Caso algum usuário não esteja presente, a daily começará às ${this.timeoutD
     await message.react('🔴')
     await message.react('🟢')
 
-    const collector = message.createReactionCollector((reaction, user) => ['🔴', '🟢'].includes(reaction.emoji.name), { time : 1000000 })
+    const collector = message.createReactionCollector((reaction, user) => ['🔴', '🟢'].includes(reaction.emoji.name), { time : 3000000 })
+
+    collector.on('dispose', (reaction) => console.log('🏧 Collector disposed'))
+    collector.on('remove', (reaction) => console.log('🏧 Collector removed'))
+    collector.on('end', (reaction) => console.log('🏧 Collector ended'))
 
     collector.on('collect', (reaction) =>
     {
