@@ -4,6 +4,7 @@
   "description": "bot for handling dailies",
   "main": "index.js",
   "scripts": {
+    "build" : "npx prisma migrate deploy && tsc",
     "start": "node dist/index.js"
   },
   "author": "",
