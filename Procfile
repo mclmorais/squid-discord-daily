@@ -1,2 +1,2 @@
 release: npx prisma migrate deploy
-release: tsc
+release: npx tsc
