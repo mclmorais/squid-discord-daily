@@ -33,12 +33,12 @@ export class Scheduler
   #CreateJob (daily : Daily)
   {
     this.jobs.set(daily.id, nodeSchedule.scheduleJob(daily.scheduleCron as string, async () => { await (new DailyInstance(daily)).Start() }))
-    console.log(`Scheduled daily ${daily.title} with crontab ${daily.scheduleCron}`)
+    console.log(`⌚ Scheduled daily ${daily.title} with crontab ${daily.scheduleCron}`)
   }
 
   #RescheduleJob (existingJob: Job, daily : Daily, crontab: string)
   {
     const result = existingJob.reschedule(crontab)
-    console.log(`Daily ${daily.title} reschedule for ${crontab} status: ${result}`)
+    console.log(`⌚ Daily ${daily.title} reschedule for ${crontab} status: ${result}`)
   }
 }

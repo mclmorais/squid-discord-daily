@@ -13,7 +13,9 @@ export class Bot
     console.log('↗️  Scheduler')
     await this.scheduler.schedule()
     console.log('☑️  Scheduler')
+
     console.log('')
+
     console.log('↗️  Discord bot')
     this.client.once('ready', () => console.log('☑️  Discord Bot'))
     this.client.on('message', message => this.commandInterpreter.interpret(message))
